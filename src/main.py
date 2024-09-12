@@ -23,6 +23,9 @@ def bootApplication():
         Base.metadata.create_all(mysql_conn._engine)
         fetchedOrders = orderService.fetchOrders({})
         
+        df_orders = orderService.processOrders(fetchedOrders)
+        df_orders.to_sql('orders', con=mysql_conn._engine,
+                         if_exists='append', index=False)
     except Exception as error:
         print(f"[main] ERROR: {error}")
     finally:
