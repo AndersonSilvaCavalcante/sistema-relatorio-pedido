@@ -38,6 +38,11 @@ def bootApplication():
                 query = {"createdAt": {
                     "$gte": datetime.combine(last_register.created_at.date(), time.min)}}
 
+        # Retrieving registered order ids
+        order_ids = mysql_conn._session.query(OrderReport.order_id).all()
+
+        query["_id"] = {"$nin":  [ObjectId(id_str[0]) for id_str in order_ids]}
+
         # Fetching order in Mongo DB By Query
         print("Fetching orders...")
         fetchedOrdersByQuery = orderService.fetchOrders(query)
