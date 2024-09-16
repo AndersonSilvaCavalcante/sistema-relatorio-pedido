@@ -1,0 +1,55 @@
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=order321
+      - MYSQL_DATABASE=order_analysis
+      - MYSQL_USER=order_analysis_user
+      - MYSQL_PASSWORD=order_analysis321
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - app-network
+
+  metabase:
+    image: metabase/metabase
+    depends_on:
+      - mysql
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+    environment:
+      - MB_DB_TYPE=mysql
+      - MB_DB_DBNAME=metabase
+      - MB_DB_PORT=3306
+      - MB_DB_USER=order_analysis_user
+      - MB_DB_PASS=order_analysis321
+      - MB_DB_HOST=mysql
+
+  app-python:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - mysql
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_DATABASE: order_analysis
+      MYSQL_USER: order_analysis_user
+      MYSQL_PASSWORD: order_analysis321
+      REPORT_TABLE_NAME: order_report
+    networks:
+      - app-network
+    # Run python application that fetches data for reports every 24 hours
+    entrypoint: ["sh", "-c", "while true; do python src/main.py; sleep 86400; done"]
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
