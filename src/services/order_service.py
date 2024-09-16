@@ -1,4 +1,3 @@
-import datetime
 import pandas as pd
 from services.utils import getOrderDates, getOrderPaymentDetailsAndOrderFee, getRelevantAddress
 
@@ -8,14 +7,14 @@ class OrderService:
         self.ordersCollection = conn.useCollection("orders")
 
     def fetchOrders(self, query):
-        # print(datetime.date.today())
-
-        return self.ordersCollection.find().limit(1000)
+        return self.ordersCollection.find(query).sort({"createdAt": 1})
 
     def processOrders(self, orders):
         processedOrders = []
         for order in orders:
             temp_order = {
+                "order_id": str(order['_id']),
+                "created_at": order['createdAt'],
                 "status": order['status'],
                 "number": order['number'],
                 "type": order['orderType'],
