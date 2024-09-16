@@ -21,7 +21,7 @@ def bootApplication():
         orderService = OrderService(mongo_conn)
 
         mysql_conn = ConnectMySQL(
-            user=os.getenv('MYSQL_USER'), password=os.getenv('MYSQL_PASS'), host=os.getenv('MYSQL_HOST'), dbname=os.getenv('MYSQL_DB'))
+            user=os.getenv('MYSQL_USER'), password=os.getenv('MYSQL_PASSWORD'), host=os.getenv('MYSQL_HOST'), dbname=os.getenv('MYSQL_DATABASE'))
 
         # Creating order report table
         ModelBase.metadata.create_all(mysql_conn._engine)

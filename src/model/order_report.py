@@ -1,11 +1,14 @@
+import os
+from dotenv import load_dotenv
 from sqlalchemy import Column, Integer, String, Float, DateTime, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 
+load_dotenv()
+
 ModelBase = declarative_base()
 
-
 class OrderReport(ModelBase):
-    __tablename__ = 'order_report'
+    __tablename__ = os.getenv('REPORT_TABLE_NAME', 'order_report')
 
     id = Column(Integer, primary_key=True)
     order_id = Column(String(255), unique=True, nullable=False)
